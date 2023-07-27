@@ -1,6 +1,7 @@
 package com.roboracers.gaeldrive.readings;
 
-import org.firstinspires.ftc.teamcode.modules.gaeldrive.sensors.SensorModel;
+
+import com.roboracers.gaeldrive.sensors.SensorModel;
 
 import java.util.List;
 
