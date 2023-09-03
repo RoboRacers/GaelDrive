@@ -1,10 +1,9 @@
 package com.roboracers.gaeldrive.particles;
-
-
 import org.apache.commons.math3.linear.RealVector;
 
 /**
- * Elementary class to represent a particle of an arbitrary amount of dimensions.
+ * Elementary class to represent a particle of an arbitrary number of dimensions.
+ * Used to represent the probability distribution of a state space.
  */
 public class Particle {
 
@@ -15,13 +14,28 @@ public class Particle {
     /**
      * The weightage of this particle.
      */
-    public double weight;
+    double weight;
     /**
      * This id of this particle for tracking purposes.
      */
     Integer id;
 
+    public Particle(RealVector state, double weight, Integer id) {
+        this.state = state;
+        this.weight = weight;
+        this.id = id;
+    }
 
+    /**
+     * Null initializer
+     */
+    public Particle() {
+    }
+
+    /**
+     * Set the state of the particle
+     * @param newState
+     */
     public void setState(RealVector newState) {
         state = newState;
     }
@@ -62,5 +76,14 @@ public class Particle {
      */
     public int getDimensions() {
         return this.state.getDimension();
+    }
+
+    @Override
+    public String toString() {
+        return "Particle{" +
+                "state=" + state +
+                ", weight=" + weight +
+                ", id=" + id +
+                '}';
     }
 }

@@ -12,14 +12,14 @@ import com.roboracers.gaeldrive.utils.PoseUtils;
 public class Particle2d extends Particle {
 
     public Particle2d(Pose2d pose2d, double weight, Integer id) {
-        this.state = PoseUtils.poseToVecor(pose2d);
+        this.state = PoseUtils.poseToVector(pose2d);
         this.weight = weight;
         this.id = id;
     }
 
 
     public void setPose(Pose2d newPose){
-        state = PoseUtils.poseToVecor(newPose);
+        state = PoseUtils.poseToVector(newPose);
     }
     public Pose2d getPose(){
         return PoseUtils.vectorToPose(state);

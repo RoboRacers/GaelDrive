@@ -13,7 +13,7 @@ public class PoseUtils {
      * @param pose A Pose2d Object
      * @return A RealVector Object
      */
-    public static RealVector poseToVecor(Pose2d pose) {
+    public static RealVector poseToVector(Pose2d pose) {
         return new ArrayRealVector(new double[] {pose.getX(), pose.getY(), pose.getHeading()});
     }
 
