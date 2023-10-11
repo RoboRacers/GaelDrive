@@ -2,8 +2,8 @@
 
 GaelDrive is a autonomous localization library for FTC that uses Monte Carlo Localization (MCL) to achieve the best possible autonomous cycles possible. 
 
-Works with [Roadrunner](https://github.com/acmerobotics/road-runner), a popular FTC autonomous navigation library, out of the box, but can work with any other library. 
+Works with [Roadrunner](https://github.com/acmerobotics/road-runner), a popular FTC autonomous navigation library, out of the box, but can work with any other autonomous library. 
 
-Full installalation releasing September 9th.
+Full installation releasing September 9th.
 
-Created by Vikram Kommera from FTC Team 16481 RoboRacers, in collarboration with [GaelSuite](https://github.com/GaelSuite).
+Created by Vikram Kommera from FTC Team 16481 RoboRacers, in collaboration with [GaelSuite](https://github.com/GaelSuite).
