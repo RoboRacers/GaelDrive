@@ -1,36 +1,37 @@
 package com.roboracers.gaeldrive.filters;
 
 
-import com.roboracers.gaeldrive.LocalizationConstants;
 import com.roboracers.gaeldrive.particles.Particle;
 import com.roboracers.gaeldrive.sensors.SensorModel;
+import com.roboracers.gaeldrive.utils.StatsUtils;
 
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A filter that uses Monte Carlo methods to find approximate solutions
- *  to filtering problems in a non-linear state space.
+ * to filtering problems in a non-linear state space.
  */
 public class ParticleFilter {
 
     /**
      * Hashmap that stores all the particles in Integer/Particle pairs.
      */
-    public HashMap<Integer, Particle> Particles = new HashMap<>();
-
-    public ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
+    ArrayList<Particle> Particles = new ArrayList<>();
+    private Random random = new Random();
+    int Dimensions;
 
     /**
      * Add a particle to the internal Hashmap.
      * @param particle
      */
     public void add(Particle particle) {
-        Particles.put(particle.getId(), particle);
+        Particles.add(particle);
     }
 
     /**
@@ -44,8 +45,26 @@ public class ParticleFilter {
      * Return the Hashmap that stores the particles.
      * @return Hashmap of particles
      */
-    public HashMap<Integer, Particle> getParticles() {
-        return  this.Particles;
+    public ArrayList<Particle> getParticles() {
+        return this.Particles;
+    }
+
+    public void initializeParticles(int numParticles, RealVector startingLocation, double[] constraints) {
+
+        for(int i=0; i < numParticles; i++ ) {
+            ArrayRealVector deviances = new ArrayRealVector(Dimensions);
+
+            for (int j = 0; j < Dimensions; j++) {
+                deviances.setEntry(
+                        j,
+                        ThreadLocalRandom.current().nextDouble(constraints[j*2], constraints[j*2+1])
+                        );
+            }
+
+            // Add the given particle back into the particle set
+            add(new Particle(startingLocation.add(deviances), 1, i));
+        }
+
     }
 
 
@@ -55,10 +74,14 @@ public class ParticleFilter {
      */
     public void translateParticles (RealVector translationVector) {
 
-        for (Map.Entry<Integer,Particle> particle2dEntry : Particles.entrySet()) {
-            Particle translatedParticle = particle2dEntry.getValue();
-            translatedParticle.setState(translatedParticle.getState().add(translationVector));
-            particle2dEntry.setValue(translatedParticle);
+        int index = 0;
+        // For every particle in our set of Particles
+        for (Particle particle: Particles) {
+            // Add our translational vector
+            particle.setState(particle.getState().add(translationVector));
+            // Set the value as our updated particle
+            Particles.set(index, particle);
+            index ++;
         }
     }
 
@@ -69,13 +92,13 @@ public class ParticleFilter {
      * @param models List of models to be used.
      */
     public void weighParticles(List<SensorModel> models) {
-        // For every particle in our state space
-        for (Map.Entry<Integer, Particle> entry: Particles.entrySet()) {
-            // Get the particle from the entry
-            Particle particle = entry.getValue();
 
-            double cumalativeWeight = 0;
-            double cumalativeWeightModifer = 0;
+        // For every particle in our state space
+        int index = 0;
+        for (Particle particle: Particles) {
+
+            double cumulativeWeight = 0;
+            double cumulativeWeightModifier = 0;
 
             // For every sensor model that we are considering
             for (SensorModel model: models) {
@@ -84,49 +107,98 @@ public class ParticleFilter {
                 RealVector simulatedSensorValue = model.getSimulatedReading(particle.getState());
                 RealVector actualSensorValue = model.getActualReading();
 
-                if (LocalizationConstants.TESTING) {
-                    System.out.println("Real Sensor Value: "  + actualSensorValue);
-                    System.out.println("Simulated (Random) Sensor Value: " + simulatedSensorValue);
-                }
+                double probability = StatsUtils.readingDeltaProbability(actualSensorValue, simulatedSensorValue, model.getDOF());
 
-                // Get the difference in the delta of our reading
-                RealVector readingDelta = actualSensorValue.subtract(simulatedSensorValue);
-                // Plug the normalized (Euclidean Distance) of the delta into our Chi2 distribution.
-                double probSensorGivenState = distribution.density(readingDelta.getNorm());
-
-                cumalativeWeight += probSensorGivenState * model.getWeightModifier();
-                cumalativeWeightModifer += model.getWeightModifier();
-
+                // Add the probability multiplied by the weight of the model.
+                cumulativeWeight += probability * model.getWeightModifier();
+                // Add the weight of this sensor model to the overall weight modifier
+                cumulativeWeightModifier += model.getWeightModifier();
 
             }
 
-            particle.setWeight(cumalativeWeight/cumalativeWeightModifer);
-            System.out.println("Likeness: " + particle.getWeight() + ", ID: " + particle.getId());
+            // Calculate the average weights of all the sensors and assign it to the particle
+            particle.setWeight(cumulativeWeight/cumulativeWeightModifier);
+
             // Add the particle with the updated weight back into our particle set.
-            add(particle);
+            Particles.set(index, particle);
+            index ++;
         }
     }
 
+
+    /**
+     * Systematic resampling for the particle filter.
+     */
+    public void resampleParticles(double[] resamplingDeviances) throws Exception {
+        int numParticles = Particles.size();
+        ArrayList<Particle> newParticles = new ArrayList<>(numParticles);
+
+        double totalWeight = 0.0;
+
+        for (Particle particle : Particles) {
+            totalWeight += particle.getWeight(); // Replace with your weight retrieval logic
+        }
+
+        double stepSize = totalWeight / numParticles;
+        double position = random.nextDouble() * stepSize;
+
+        int index = 0;
+        double cumulativeWeight = Particles.get(0).getWeight();
+
+        for (int i = 0; i < numParticles; i++) {
+            while (position > cumulativeWeight && index < numParticles - 1) {
+                index++;
+                cumulativeWeight += Particles.get(index).getWeight();
+            }
+
+            //System.out.println("New Particle #" + i + p);
+            newParticles.add(new Particle(
+                    StatsUtils.addGaussianNoise(
+                            Particles.get(index).getState(),
+                            resamplingDeviances
+                    ),
+                    1.0,
+                    ThreadLocalRandom.current().nextInt()
+            ));
+
+            position += stepSize;
+
+        }
+
+        Particles = newParticles;
+
+    }
+
+
     /**
      * Gets the particle with the highest weight.
-     * @return Particle2d of the highest weighted particle.
+     * @return Particle of the highest weighted particle.
      */
     public Particle getBestParticle () {
 
         double highestWeight = 0;
-        Integer bestParticleKey = 0;
+        Particle bestParticle = new Particle();
 
         // Loop through all weights and get highest weight
-        for (Map.Entry<Integer, Particle> particle2dEntry : Particles.entrySet()) {
-            double particleWeight = particle2dEntry.getValue().getWeight();
+        for (Particle particle : Particles) {
+            double particleWeight = particle.getWeight();
             if (particleWeight > highestWeight) {
-                bestParticleKey = particle2dEntry.getKey();
+                bestParticle = particle;
                 highestWeight = particleWeight;
             }
-
         }
+        return bestParticle;
+    }
 
-        return Particles.get(bestParticleKey);
+    /**
+     * Get a random particle from the particle set. Used for debugging.
+     */
+    public Particle getRandomParticle() {
+        int range = Particles.size();
+        return Particles.get(ThreadLocalRandom.current().nextInt(0, range));
+    }
 
+    public Particle getParticle(int i) {
+        return Particles.get(i);
     }
 }
