@@ -1,20 +1,9 @@
 package com.roboracers.gaeldrive.utils;
 
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 public class VectorUtils {
-
-    /**
-     * Converts the roadrunner Vector2d to an Array Real Vector
-     * @param vector2d
-     * @return Array Real Vector
-     */
-    public static RealVector Vector2dToVector (Vector2d vector2d) {
-        return new ArrayRealVector(new double[] {vector2d.getX(), vector2d.getY()});
-    }
 
     /**
      * Takes the cross product of two 2d vectors. Returns a scalar. Not commutative.

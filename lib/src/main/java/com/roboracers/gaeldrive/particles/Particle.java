@@ -1,5 +1,4 @@
 package com.roboracers.gaeldrive.particles;
-import androidx.annotation.NonNull;
 
 import org.apache.commons.math3.linear.RealVector;
 
@@ -89,7 +88,6 @@ public class Particle implements Cloneable {
                 '}';
     }
 
-    @NonNull
     public Object clone() {
         try {
             return super.clone();

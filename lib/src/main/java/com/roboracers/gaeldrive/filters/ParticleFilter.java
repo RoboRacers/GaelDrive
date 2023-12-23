@@ -42,8 +42,8 @@ public class ParticleFilter {
     }
 
     /**
-     * Return the Hashmap that stores the particles.
-     * @return Hashmap of particles
+     * Return the arraylist that stores the particles.
+     * @return arraylist of particles
      */
     public ArrayList<Particle> getParticles() {
         return this.Particles;
@@ -91,7 +91,7 @@ public class ParticleFilter {
      * sensor value simulated for each one of our sensors.
      * @param models List of models to be used.
      */
-    public void weighParticles(List<SensorModel> models) {
+    public void weighParticles(List<SensorModel> models) throws Exception {
 
         // For every particle in our state space
         int index = 0;
@@ -151,14 +151,13 @@ public class ParticleFilter {
                 cumulativeWeight += Particles.get(index).getWeight();
             }
 
-            //System.out.println("New Particle #" + i + p);
             newParticles.add(new Particle(
                     StatsUtils.addGaussianNoise(
                             Particles.get(index).getState(),
                             resamplingDeviances
                     ),
                     1.0,
-                    ThreadLocalRandom.current().nextInt()
+                    ThreadLocalRandom.current().nextInt() // TODO: Change
             ));
 
             position += stepSize;
