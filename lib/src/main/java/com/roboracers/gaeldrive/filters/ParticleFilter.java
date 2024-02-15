@@ -1,13 +1,13 @@
 package com.roboracers.gaeldrive.filters;
 
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.roboracers.gaeldrive.particles.Particle;
 import com.roboracers.gaeldrive.sensors.SensorModel;
-import com.roboracers.gaeldrive.tests.TestConstants;
+import com.roboracers.gaeldrive.utils.Deviance;
 import com.roboracers.gaeldrive.utils.StatsUtils;
 
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.exception.ZeroException;
+import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 import java.util.ArrayList;
@@ -19,21 +19,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * A filter that uses Monte Carlo methods to find approximate solutions
  * to filtering problems in a non-linear state space.
  */
-public abstract class ParticleFilter {
+public class ParticleFilter {
 
     /**
      * Hashmap that stores all the particles in Integer/Particle pairs.
      */
     ArrayList<Particle> Particles = new ArrayList<>();
-
-    private Random random = new Random();
+    private final Random random = new Random();
     int Dimensions;
 
-    ChiSquaredDistribution distribution2DOF = new ChiSquaredDistribution(2);
-    ChiSquaredDistribution distribution3DOF = new ChiSquaredDistribution(3);
-
     /**
-     * Add a particle to the internal Hashmap.
+     * Add a particle to the internal array.
      * @param particle
      */
     public void add(Particle particle) {
@@ -48,11 +44,29 @@ public abstract class ParticleFilter {
     }
 
     /**
-     * Return the Hashmap that stores the particles.
-     * @return Hashmap of particles
+     * Return the arraylist that stores the particles.
+     * @return arraylist of particles
      */
     public ArrayList<Particle> getParticles() {
         return this.Particles;
+    }
+
+    public void initializeParticles(int numParticles, RealVector startingLocation, double[] constraints) {
+
+        for(int i=0; i < numParticles; i++ ) {
+            ArrayRealVector deviances = new ArrayRealVector(Dimensions);
+
+            for (int j = 0; j < Dimensions; j++) {
+                deviances.setEntry(
+                        j,
+                        ThreadLocalRandom.current().nextDouble(constraints[j*2], constraints[j*2+1])
+                        );
+            }
+
+            // Add the given particle back into the particle set
+            add(new Particle(startingLocation.add(deviances), 1, i));
+        }
+
     }
 
 
@@ -79,7 +93,7 @@ public abstract class ParticleFilter {
      * sensor value simulated for each one of our sensors.
      * @param models List of models to be used.
      */
-    public void weighParticles(List<SensorModel> models) {
+    public void weighParticles(List<SensorModel> models) throws Exception {
 
         // For every particle in our state space
         int index = 0;
@@ -104,6 +118,9 @@ public abstract class ParticleFilter {
 
             }
 
+            if (cumulativeWeightModifier == 0) {
+                throw new Exception("Sensor weights are zero, assign weights to sensor");
+            }
             // Calculate the average weights of all the sensors and assign it to the particle
             particle.setWeight(cumulativeWeight/cumulativeWeightModifier);
 
@@ -113,53 +130,16 @@ public abstract class ParticleFilter {
         }
     }
 
-    /**
-     *
-     * @param models List of models to be used.
-     */
-    public void weighParticlesBayesian(List<SensorModel> models) {
-        //TODO: Implement Fully Bayesian Weighting
-
-        // For every particle in our state space
-        int index = 0;
-        for (Particle particle: Particles) {
-
-            double cumalativeWeight = 0;
-            double cumalativeWeightModifer = 0;
-
-            // For every sensor model that we are considering
-            for (SensorModel model: models) {
-
-                // Get both the actual and simulated reading
-                RealVector simulatedSensorValue = model.getSimulatedReading(particle.getState());
-                RealVector actualSensorValue = model.getActualReading();
-
-                double probability = StatsUtils.readingDeltaProbability(actualSensorValue, simulatedSensorValue, model.getDOF());
-
-                // Add the probability multiplied by the weight of the model.
-                cumalativeWeight += probability * model.getWeightModifier();
-                // Add the weight of this sensor model to the overall weight modifier
-                cumalativeWeightModifer += model.getWeightModifier();
-
-            }
-
-            // Calculate the average weights of all the sensors and assign it to the particle
-            particle.setWeight((cumalativeWeight/cumalativeWeightModifer)*particle.getWeight());
-
-            // Add the particle with the updated weight back into our particle set.
-            Particles.set(index, particle);
-            index ++;
-        }
-    }
 
     /**
      * Systematic resampling for the particle filter.
      */
-    public void resampleParticles() {
+    public void resampleParticles(Deviance resamplingDeviances) throws Exception {
         int numParticles = Particles.size();
         ArrayList<Particle> newParticles = new ArrayList<>(numParticles);
 
         double totalWeight = 0.0;
+
         for (Particle particle : Particles) {
             totalWeight += particle.getWeight(); // Replace with your weight retrieval logic
         }
@@ -169,24 +149,28 @@ public abstract class ParticleFilter {
 
         int index = 0;
         double cumulativeWeight = Particles.get(0).getWeight();
+
         for (int i = 0; i < numParticles; i++) {
             while (position > cumulativeWeight && index < numParticles - 1) {
                 index++;
                 cumulativeWeight += Particles.get(index).getWeight();
             }
 
-            Particle particle = Particles.get(index);
-            particle.setWeight(1.0);
-            if (TestConstants.ADD_NOISE) {
-                newParticles.add(sampleFromParticle(particle));
-            } else {
-                newParticles.add(particle);
-            }
+            newParticles.add(new Particle(
+                    StatsUtils.addGaussianNoise(
+                            Particles.get(index).getState(),
+                            resamplingDeviances
+                    ),
+                    1.0,
+                    ThreadLocalRandom.current().nextInt() // TODO: Change
+            ));
 
             position += stepSize;
+
         }
 
         Particles = newParticles;
+
     }
 
 
@@ -194,10 +178,10 @@ public abstract class ParticleFilter {
      * Gets the particle with the highest weight.
      * @return Particle of the highest weighted particle.
      */
-    public Particle getBestParticle () {
+    public Particle getBestParticle () throws Exception {
 
         double highestWeight = 0;
-        Particle bestParticle = new Particle();
+        Particle bestParticle = null;
 
         // Loop through all weights and get highest weight
         for (Particle particle : Particles) {
@@ -207,27 +191,23 @@ public abstract class ParticleFilter {
                 highestWeight = particleWeight;
             }
         }
-        return bestParticle;
+        if (bestParticle == null) {
+            throw new Exception("Sorting error when getting best particle, no particle has highest weight.");
+        } else {
+            return bestParticle;
+        }
+
     }
 
     /**
      * Get a random particle from the particle set. Used for debugging.
-     * @return
      */
     public Particle getRandomParticle() {
         int range = Particles.size();
         return Particles.get(ThreadLocalRandom.current().nextInt(0, range));
     }
 
-
-    public abstract void initializeParticles(int numParticles, Pose2d startingLocation, double xMin, double xMax, double yMin, double yMax, double headingMin, double headingMax);
-
-    public abstract void initializeParticles(int numParticles, Pose2d startingLocation);
-
-    /**
-     * Resampling from a single particle. Take the original particle and add gaussian noise to it.
-     * @param initialParticle The starting particle
-     * @return The resampled particle
-     */
-    protected abstract Particle sampleFromParticle(Particle initialParticle);
+    public Particle getParticle(int i) {
+        return Particles.get(i);
+    }
 }

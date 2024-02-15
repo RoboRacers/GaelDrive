@@ -1,11 +1,12 @@
 package com.roboracers.gaeldrive.particles;
+
 import org.apache.commons.math3.linear.RealVector;
 
 /**
  * Elementary class to represent a particle of an arbitrary number of dimensions.
  * Used to represent the probability distribution of a state space.
  */
-public class Particle {
+public class Particle implements Cloneable {
 
     /**
      * Represents the state of the particle via a vector of arbitrary dimension.
@@ -86,4 +87,13 @@ public class Particle {
                 ", id=" + id +
                 '}';
     }
+
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e.toString());
+        }
+    }
 }
+

@@ -23,7 +23,7 @@ public interface SensorModel extends Updatable {
      * @param state State of the particle the reading is based on
      * @return Simulated sensor value
      */
-    public RealVector getSimulatedReading(RealVector state);
+    public RealVector getSimulatedReading(RealVector state) throws Exception;
 
     /**
      * @return Degrees of freedom of the sensor model
