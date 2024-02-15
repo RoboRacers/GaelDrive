@@ -3,8 +3,10 @@ package com.roboracers.gaeldrive.filters;
 
 import com.roboracers.gaeldrive.particles.Particle;
 import com.roboracers.gaeldrive.sensors.SensorModel;
+import com.roboracers.gaeldrive.utils.Deviance;
 import com.roboracers.gaeldrive.utils.StatsUtils;
 
+import org.apache.commons.math3.exception.ZeroException;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
@@ -23,11 +25,11 @@ public class ParticleFilter {
      * Hashmap that stores all the particles in Integer/Particle pairs.
      */
     ArrayList<Particle> Particles = new ArrayList<>();
-    private Random random = new Random();
+    private final Random random = new Random();
     int Dimensions;
 
     /**
-     * Add a particle to the internal Hashmap.
+     * Add a particle to the internal array.
      * @param particle
      */
     public void add(Particle particle) {
@@ -116,6 +118,9 @@ public class ParticleFilter {
 
             }
 
+            if (cumulativeWeightModifier == 0) {
+                throw new Exception("Sensor weights are zero, assign weights to sensor");
+            }
             // Calculate the average weights of all the sensors and assign it to the particle
             particle.setWeight(cumulativeWeight/cumulativeWeightModifier);
 
@@ -129,7 +134,7 @@ public class ParticleFilter {
     /**
      * Systematic resampling for the particle filter.
      */
-    public void resampleParticles(double[] resamplingDeviances) throws Exception {
+    public void resampleParticles(Deviance resamplingDeviances) throws Exception {
         int numParticles = Particles.size();
         ArrayList<Particle> newParticles = new ArrayList<>(numParticles);
 
@@ -173,10 +178,10 @@ public class ParticleFilter {
      * Gets the particle with the highest weight.
      * @return Particle of the highest weighted particle.
      */
-    public Particle getBestParticle () {
+    public Particle getBestParticle () throws Exception {
 
         double highestWeight = 0;
-        Particle bestParticle = new Particle();
+        Particle bestParticle = null;
 
         // Loop through all weights and get highest weight
         for (Particle particle : Particles) {
@@ -186,7 +191,12 @@ public class ParticleFilter {
                 highestWeight = particleWeight;
             }
         }
-        return bestParticle;
+        if (bestParticle == null) {
+            throw new Exception("Sorting error when getting best particle, no particle has highest weight.");
+        } else {
+            return bestParticle;
+        }
+
     }
 
     /**

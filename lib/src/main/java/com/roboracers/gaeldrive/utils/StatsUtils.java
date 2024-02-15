@@ -14,8 +14,10 @@ public class StatsUtils {
     static private double STD_DEVIATION = 1;
     static private double MEAN = 0;
 
-    static ChiSquaredDistribution distribution2DOF = new ChiSquaredDistribution(2);
-    static ChiSquaredDistribution distribution3DOF = new ChiSquaredDistribution(3);
+    static final ChiSquaredDistribution distribution2DOF = new ChiSquaredDistribution(2);
+    static final ChiSquaredDistribution distribution3DOF = new ChiSquaredDistribution(3);
+
+
 
     /**
      * Adds Gaussian noise to a vector of arbitrary length.
@@ -24,7 +26,7 @@ public class StatsUtils {
      * @return Vector with noise
      * @throws MismatchedLengthException
      */
-    public static RealVector addGaussianNoise(RealVector state, double[] deviances) throws MismatchedLengthException {
+    public static RealVector addGaussianNoise(RealVector state, Deviance deviances) throws MismatchedLengthException {
 
         int len = state.getDimension();
 
@@ -33,7 +35,7 @@ public class StatsUtils {
         }
 
         for (int i = 0; i < len; i++) {
-            state.setEntry(i, generateGaussian(deviances[i], state.getEntry(i)));
+            state.setEntry(i, generateGaussian(deviances.values[i], state.getEntry(i)));
         }
 
         return new ArrayRealVector(state);

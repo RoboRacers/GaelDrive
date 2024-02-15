@@ -1,5 +1,7 @@
 package com.roboracers.gaeldrive.sensors;
 
+import com.roboracers.gaeldrive.utils.MismatchedLengthException;
+
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
@@ -8,7 +10,7 @@ import org.apache.commons.math3.linear.RealVector;
  */
 public abstract class PositonalSensorModel implements SensorModel {
 
-    public ArrayRealVector position;
+    public RealVector position;
 
     public double weight;
     public int DOF = 2;
@@ -32,7 +34,7 @@ public abstract class PositonalSensorModel implements SensorModel {
 
     /**
      * Returns a vectorized version of the reading.
-     * @return
+     * @return Position
      */
     @Override
     public RealVector getActualReading() {
@@ -46,7 +48,9 @@ public abstract class PositonalSensorModel implements SensorModel {
      */
     @Override
     public RealVector getSimulatedReading(RealVector state) throws Exception {
-        assert position == null || state.getDimension() == position.getDimension();
+        if (state.getDimension() != position.getDimension() && position != null) {
+            throw new MismatchedLengthException("Mismatched vector length for positional sensor model");
+        }
         return state;
     }
 

@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ParticleFilter2d extends ParticleFilter {
 
-    public Bound bound;
+    public Bound bound = new Bound(-0.1,0.1, -0.1,0.1, -0.01, 0.01);
     public double[] resampleDeviances = {0.1, 0.1, 0.01};
 
     /**
@@ -44,12 +44,12 @@ public class ParticleFilter2d extends ParticleFilter {
     }
 
     public static class Bound {
-        private double xMin;
-        private double xMax;
-        private double yMin;
-        private double yMax;
-        private double headingMin;
-        private double headingMax;
+        private final double xMin;
+        private final double xMax;
+        private final double yMin;
+        private final double yMax;
+        private final double headingMin;
+        private final double headingMax;
 
         public Bound(double xMin, double xMax, double yMin, double yMax, double headingMin, double headingMax) {
             this.xMin = xMin;
