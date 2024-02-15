@@ -1,6 +1,7 @@
 package com.roboracers.gaeldrive.filters;
 
 import com.roboracers.gaeldrive.particles.Particle;
+import com.roboracers.gaeldrive.utils.Deviance;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
@@ -14,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ParticleFilter2d extends ParticleFilter {
 
     public Bound bound = new Bound(-0.1,0.1, -0.1,0.1, -0.01, 0.01);
-    public double[] resampleDeviances = {0.1, 0.1, 0.01};
+    public Deviance resampleDeviance = new Deviance(0.1, 0.1, 0.01);
 
     /**
      * Quick initialization of a Particle Filter with default covariances
@@ -35,12 +36,12 @@ public class ParticleFilter2d extends ParticleFilter {
     /**
      * Initialization with initilization bound and resampling deviances.
      * @param bound
-     * @param resampleDeviances
+     * @param resampleDeviance
      */
-    public ParticleFilter2d(Bound bound, double[] resampleDeviances) {
+    public ParticleFilter2d(Bound bound, Deviance resampleDeviance) {
         super.Dimensions = 3;
         this.bound = bound;
-        this.resampleDeviances = resampleDeviances;
+        this.resampleDeviance = resampleDeviance;
     }
 
     public static class Bound {
@@ -115,7 +116,7 @@ public class ParticleFilter2d extends ParticleFilter {
     }
 
     public void resampleParticles() throws Exception {
-        super.resampleParticles(this.resampleDeviances);
+        super.resampleParticles(this.resampleDeviance);
     }
 
 
