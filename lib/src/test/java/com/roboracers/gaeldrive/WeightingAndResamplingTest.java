@@ -3,7 +3,7 @@ package com.roboracers.gaeldrive;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.roboracers.gaeldrive.filters.ParticleFilter2d;
+import com.roboracers.gaeldrive.filters.ParticleFilter2D;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.sensors.TestDistanceSensorModel;
 import com.roboracers.gaeldrive.utils.PoseUtils;
@@ -18,7 +18,7 @@ public class WeightingAndResamplingTest {
     static long loop;
     static long loopTime = 0;
 
-    static ParticleFilter2d filter = new ParticleFilter2d(-72,72,-72,72,-0.001,0.001);
+    static ParticleFilter2D filter = new ParticleFilter2D(-72,72,-72,72,-0.001,0.001);
     static List<SensorModel> models = new ArrayList<>();
 
     @Test void WeightingandResamplingMain() {

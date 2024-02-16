@@ -5,12 +5,11 @@ package com.roboracers.gaeldrive;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.roboracers.gaeldrive.filters.ParticleFilter2d;
+import com.roboracers.gaeldrive.filters.ParticleFilter2D;
 import com.roboracers.gaeldrive.sensors.PositonalSensorModel;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.utils.VectorUtils;
 
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.List;
 class PositionalSensorTest {
     @Test void TranslationAndPositionTest() throws Exception {
 
-        ParticleFilter2d particleFilter2d = new ParticleFilter2d();
+        ParticleFilter2D particleFilter2d = new ParticleFilter2D();
 
         PositonalSensorModel positonalSensorModel = new PositonalSensorModel() {
 

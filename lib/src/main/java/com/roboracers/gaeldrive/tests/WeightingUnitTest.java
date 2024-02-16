@@ -1,7 +1,7 @@
 package com.roboracers.gaeldrive.tests;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.roboracers.gaeldrive.filters.ParticleFilter2d;
+import com.roboracers.gaeldrive.filters.ParticleFilter2D;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.sensors.TestDistanceSensorModel;
 import com.roboracers.gaeldrive.utils.Updatable;
@@ -13,7 +13,7 @@ public class WeightingUnitTest {
     static long loop;
     static long loopTime = 0;
 
-    static ParticleFilter2d filter = new ParticleFilter2d();
+    static ParticleFilter2D filter = new ParticleFilter2D();
     static List<SensorModel> models = new ArrayList<>();
     public static void main(String[] args) {
 

@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Specialized Particle Filter class for 2d robot localization.
  * Note that this is technically a 3d (x,y,Heading) particle filter.
  */
-public class ParticleFilter2d extends ParticleFilter {
+public class ParticleFilter2D extends ParticleFilter {
 
     public Bound bound = new Bound(-0.1,0.1, -0.1,0.1, -0.01, 0.01);
     public Deviance resampleDeviance = new Deviance(0.1, 0.1, 0.01);
@@ -20,7 +20,7 @@ public class ParticleFilter2d extends ParticleFilter {
     /**
      * Quick initialization of a Particle Filter with default covariances
      */
-    public ParticleFilter2d() {
+    public ParticleFilter2D() {
         super.Dimensions = 3;
     }
 
@@ -28,7 +28,7 @@ public class ParticleFilter2d extends ParticleFilter {
      * Thorough initialization of a Particle Filter with custom covariances
      * @param bound bounds for particle initialization
      */
-    public ParticleFilter2d(Bound bound) {
+    public ParticleFilter2D(Bound bound) {
         super.Dimensions = 3;
         this.bound = bound;
     }
@@ -38,7 +38,7 @@ public class ParticleFilter2d extends ParticleFilter {
      * @param bound
      * @param resampleDeviance
      */
-    public ParticleFilter2d(Bound bound, Deviance resampleDeviance) {
+    public ParticleFilter2D(Bound bound, Deviance.Deviance3D resampleDeviance) {
         super.Dimensions = 3;
         this.bound = bound;
         this.resampleDeviance = resampleDeviance;
