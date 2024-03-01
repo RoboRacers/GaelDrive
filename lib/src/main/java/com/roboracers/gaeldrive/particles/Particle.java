@@ -1,5 +1,6 @@
 package com.roboracers.gaeldrive.particles;
 
+import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 /**
@@ -19,18 +20,18 @@ public class Particle implements Cloneable {
     /**
      * This id of this particle for tracking purposes.
      */
-    Integer id;
 
-    public Particle(RealVector state, double weight, Integer id) {
+    public Particle(RealVector state, double weight) {
         this.state = state;
         this.weight = weight;
-        this.id = id;
     }
 
     /**
      * Null initializer
      */
     public Particle() {
+        this.state =  new ArrayRealVector();
+        this.weight = 0;
     }
 
     /**
@@ -66,12 +67,6 @@ public class Particle implements Cloneable {
     }
 
     /**
-     * Gets the id of the particle.
-     * @return The ID of the particle.
-     */
-    public Integer getId() { return this.id; }
-
-    /**
      * Get the shape (dimensions) of the state of this particle.
      * @return Dimensions of this particle's state vector.
      */
@@ -84,7 +79,6 @@ public class Particle implements Cloneable {
         return "Particle{" +
                 "state=" + state +
                 ", weight=" + weight +
-                ", id=" + id +
                 '}';
     }
 

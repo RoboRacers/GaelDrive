@@ -1,8 +1,7 @@
 package com.roboracers.gaeldrive.sensors;
 
-import com.roboracers.gaeldrive.utils.MismatchedLengthException;
+import com.roboracers.gaeldrive.exceptions.MismatchedLengthException;
 
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 /**

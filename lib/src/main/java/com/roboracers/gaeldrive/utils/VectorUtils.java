@@ -26,4 +26,8 @@ public class VectorUtils {
         return  new ArrayRealVector(new double[] {x, y, heading});
     }
 
+    public static RealVector create2DVector (double x, double y) {
+        return  new ArrayRealVector(new double[] {x, y});
+    }
+
  }

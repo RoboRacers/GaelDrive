@@ -1,6 +1,8 @@
 package com.roboracers.gaeldrive.utils;
 
 
+import com.roboracers.gaeldrive.exceptions.MismatchedLengthException;
+
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
@@ -68,13 +70,11 @@ public class StatsUtils {
 
         RealVector readingDelta = v1.subtract(v2);
 
-        if (DOF == 2){
-            return distribution2DOF.density(readingDelta.getNorm());
-        } else if ( DOF == 3 ) {
-            return distribution3DOF.density(readingDelta.getNorm());
-        } else {
-            return distribution2DOF.density(readingDelta.getNorm());
-        }
+        return switch (DOF) {
+            case 2 -> distribution2DOF.density(readingDelta.getNorm());
+            case 3 -> distribution3DOF.density(readingDelta.getNorm());
+            default -> distribution2DOF.density(readingDelta.getNorm());
+        };
 
     }
 }

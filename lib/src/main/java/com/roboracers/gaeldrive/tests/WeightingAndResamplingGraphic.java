@@ -1,20 +1,21 @@
-package com.roboracers.gaeldrive;
+package com.roboracers.gaeldrive.tests;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.roboracers.gaeldrive.filters.ParticleFilter3d;
+import com.roboracers.gaeldrive.graphics.DrawingCanvas;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.sensors.TestDistanceSensorModel;
 import com.roboracers.gaeldrive.utils.Updatable;
 import com.roboracers.gaeldrive.utils.VectorUtils;
 
-import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightingAndResamplingTest {
+import javax.swing.JFrame;
+
+public class WeightingAndResamplingGraphic {
     static long loop;
     static long loopTime = 0;
 
@@ -23,8 +24,7 @@ public class WeightingAndResamplingTest {
                                                             ));
     static List<SensorModel> models = new ArrayList<>();
 
-    @Test void WeightingandResamplingMain() throws Exception {
-
+    public static void main(String[] args) throws Exception {
         System.out.println("* * * * * * * * * * * *");
         System.out.println("Unit Test Started!");
         loop = System.nanoTime();
@@ -38,7 +38,7 @@ public class WeightingAndResamplingTest {
         models.add(new TestDistanceSensorModel(51, pose3));
 
         for (Updatable model: models
-             ) {
+        ) {
             model.update();
         }
 
@@ -67,11 +67,22 @@ public class WeightingAndResamplingTest {
         }
 
         System.out.println("Best Particle after cycles: " + filter.getBestParticle().getState());
+        filter.resampleParticles();
+
+        int w = 640;
+        int h =480;
+        JFrame f =  new JFrame();
+        DrawingCanvas dc = new DrawingCanvas(w,h);
+        dc.particles =  filter.getParticles();
+        f.setSize(w,h);
+        f.setTitle("Drawing in Java");
+        f.add(dc);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setVisible(true);
 
         //System.out.println("Random Resampled Particle: " + PoseUtils.vectorToPose(filter.getRandomParticle().getState()));
 
         System.out.println("Unit Test Ended!");
-        assertTrue(true, "someLibraryMethod should return 'true'");
         System.out.println("* * * * * * * * * * * *");
     }
 }

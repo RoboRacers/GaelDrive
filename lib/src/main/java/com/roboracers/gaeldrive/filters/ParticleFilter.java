@@ -8,7 +8,9 @@ import com.roboracers.gaeldrive.utils.StatsUtils;
 
 import org.apache.commons.math3.exception.ZeroException;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealVector;
+import org.apache.commons.math3.stat.correlation.Covariance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class ParticleFilter {
             }
 
             // Add the given particle back into the particle set
-            add(new Particle(startingLocation.add(deviances), 1, i));
+            add(new Particle(startingLocation.add(deviances), 1));
         }
 
     }
@@ -161,8 +163,7 @@ public class ParticleFilter {
                             Particles.get(index).getState(),
                             resamplingDeviances
                     ),
-                    1.0,
-                    ThreadLocalRandom.current().nextInt() // TODO: Change
+                    1.0
             ));
 
             position += stepSize;
@@ -210,4 +211,5 @@ public class ParticleFilter {
     public Particle getParticle(int i) {
         return Particles.get(i);
     }
+
 }

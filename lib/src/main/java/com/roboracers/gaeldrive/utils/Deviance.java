@@ -18,9 +18,8 @@ public class Deviance {
         this.length = values.length;
     }
 
-    public class Deviance3D extends Deviance {
-
-        public Deviance3D(double v1, double v2, double v3) {
+    public static class Deviance3d extends Deviance {
+        public Deviance3d(double v1, double v2, double v3) {
             super(new double[] {v1, v2, v3});
         }
     }

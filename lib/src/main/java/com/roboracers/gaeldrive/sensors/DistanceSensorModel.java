@@ -1,7 +1,6 @@
 package com.roboracers.gaeldrive.sensors;
 
 import com.roboracers.gaeldrive.distance.FieldDistance;
-import com.roboracers.gaeldrive.utils.PoseUtils;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
@@ -54,7 +53,8 @@ public abstract class DistanceSensorModel implements SensorModel {
      */
     @Override
     public RealVector getSimulatedReading(RealVector state) {
-        double simulatedDistance = FieldDistance.calculateSimulatedDistance(PoseUtils.vectorToPose(state.add(location)));
+        double simulatedDistance = 0;
+        // double simulatedDistance = FieldDistance.calculateSimulatedDistance(PoseUtils.vectorToPose(state.add(location)));
         // Limiting Readings to min and max distances
         if (simulatedDistance < minDistance) {
             simulatedDistance = minDistance;

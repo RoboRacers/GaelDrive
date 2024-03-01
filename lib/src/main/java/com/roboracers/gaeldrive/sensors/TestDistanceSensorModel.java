@@ -1,7 +1,6 @@
 package com.roboracers.gaeldrive.sensors;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.roboracers.gaeldrive.utils.PoseUtils;
 
 
 /**
@@ -17,7 +16,7 @@ public class TestDistanceSensorModel extends DistanceSensorModel {
      *
      */
     public TestDistanceSensorModel(double dist, Pose2d location) {
-        this.location = PoseUtils.poseToVector(location);
+        this.location = null;
         this.rawReading = dist;
         this.minDistance = 5;
         this.maxDistance = 100;

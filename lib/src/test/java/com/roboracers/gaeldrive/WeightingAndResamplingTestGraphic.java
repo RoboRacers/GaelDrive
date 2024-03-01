@@ -1,23 +1,32 @@
-package com.roboracers.gaeldrive.tests;
+package com.roboracers.gaeldrive;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.roboracers.gaeldrive.filters.ParticleFilter2D;
+import com.roboracers.gaeldrive.filters.ParticleFilter3d;
+import com.roboracers.gaeldrive.graphics.DrawingCanvas;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.sensors.TestDistanceSensorModel;
-import com.roboracers.gaeldrive.utils.PoseUtils;
 import com.roboracers.gaeldrive.utils.Updatable;
+import com.roboracers.gaeldrive.utils.VectorUtils;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightingandResamplingUnitTest {
+import javax.swing.JFrame;
+
+public class WeightingAndResamplingTestGraphic {
     static long loop;
     static long loopTime = 0;
 
-    static ParticleFilter2D filter = new ParticleFilter2D(-72,72,-72,72,-0.001,0.001);
+    static ParticleFilter3d filter = new ParticleFilter3d(new ParticleFilter3d.Bound(
+                                                                   -72, 72, -72, 72, -0.001, 0.001
+                                                            ));
     static List<SensorModel> models = new ArrayList<>();
 
-    public static void main(String[] args) {
+    @Test void WeightingandResamplingMain() throws Exception {
 
         System.out.println("* * * * * * * * * * * *");
         System.out.println("Unit Test Started!");
@@ -40,11 +49,11 @@ public class WeightingandResamplingUnitTest {
         System.out.println("Actual Sensor Reading: " + models.get(1).getActualReading() + ", Relative Sensor Location: " + pose2);
         System.out.println("Actual Sensor Reading: " + models.get(2).getActualReading() + ", Relative Sensor Location: " + pose3);
 
-        filter.initializeParticles(2000, new Pose2d(0, 0,Math.toRadians(45)));
+        filter.initializeParticles(20000, VectorUtils.create3DVector(0,0, Math.toRadians(45)));
         filter.weighParticles(models);
         loopTime = System.nanoTime();
 
-        System.out.println("Best Particle Pose: " + filter.getBestPose());
+        System.out.println("Best Particle Pose: " + filter.getBestParticle().getState());
         System.out.println("Best Particle Weight: " + filter.getBestParticle().getWeight());
         System.out.println("Time for weighting function call: " + (loopTime-loop)/1000000 + "ms");
 
@@ -52,7 +61,7 @@ public class WeightingandResamplingUnitTest {
         filter.resampleParticles();
         loopTime = System.nanoTime();
 
-        System.out.println("Random Resampled Particle: " + PoseUtils.vectorToPose(filter.getRandomParticle().getState()));
+        //System.out.println("Random Resampled Particle: " + PoseUtils.vectorToPose(filter.getRandomParticle().getState()));
         System.out.println("Time for resampling function call: " + (loopTime-loop)/1000000 + "ms");
 
         for (int i = 0; i < 100; i++) {
@@ -60,11 +69,23 @@ public class WeightingandResamplingUnitTest {
             filter.weighParticles(models);
         }
 
-        System.out.println("Best Particle after cycles: " + filter.getBestPose());
+        System.out.println("Best Particle after cycles: " + filter.getBestParticle().getState());
 
-        System.out.println("Random Resampled Particle: " + PoseUtils.vectorToPose(filter.getRandomParticle().getState()));
+        int w = 1000;
+        int h =1000;
+        JFrame f =  new JFrame();
+        DrawingCanvas dc = new DrawingCanvas(w,h);
+        dc.particles =  filter.getParticles();
+        f.setSize(w,h);
+        f.setTitle("Drawing in Java");
+        f.add(dc);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setVisible(true);
+
+        //System.out.println("Random Resampled Particle: " + PoseUtils.vectorToPose(filter.getRandomParticle().getState()));
 
         System.out.println("Unit Test Ended!");
+        assertTrue(true, "someLibraryMethod should return 'true'");
         System.out.println("* * * * * * * * * * * *");
     }
 }

@@ -12,15 +12,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * Specialized Particle Filter class for 2d robot localization.
  * Note that this is technically a 3d (x,y,Heading) particle filter.
  */
-public class ParticleFilter2D extends ParticleFilter {
+public class ParticleFilter3d extends ParticleFilter {
 
     public Bound bound = new Bound(-0.1,0.1, -0.1,0.1, -0.01, 0.01);
-    public Deviance resampleDeviance = new Deviance(0.1, 0.1, 0.01);
+    public Deviance resampleDeviance =  new Deviance.Deviance3d(0.1, 0.1, 0.01);
 
     /**
      * Quick initialization of a Particle Filter with default covariances
      */
-    public ParticleFilter2D() {
+    public ParticleFilter3d() {
         super.Dimensions = 3;
     }
 
@@ -28,7 +28,7 @@ public class ParticleFilter2D extends ParticleFilter {
      * Thorough initialization of a Particle Filter with custom covariances
      * @param bound bounds for particle initialization
      */
-    public ParticleFilter2D(Bound bound) {
+    public ParticleFilter3d(Bound bound) {
         super.Dimensions = 3;
         this.bound = bound;
     }
@@ -38,7 +38,7 @@ public class ParticleFilter2D extends ParticleFilter {
      * @param bound
      * @param resampleDeviance
      */
-    public ParticleFilter2D(Bound bound, Deviance.Deviance3D resampleDeviance) {
+    public ParticleFilter3d(Bound bound, Deviance.Deviance3d resampleDeviance) {
         super.Dimensions = 3;
         this.bound = bound;
         this.resampleDeviance = resampleDeviance;
@@ -84,7 +84,7 @@ public class ParticleFilter2D extends ParticleFilter {
             });
 
             // Add the given particle back into the particle set
-            super.add(new Particle(addedPose, 0, i));
+            super.add(new Particle(addedPose, 0));
         }
 
     }
@@ -110,7 +110,7 @@ public class ParticleFilter2D extends ParticleFilter {
             });
 
             // Add the given particle back into the particle set
-            super.add(new Particle(addedPose, 0, i));
+            super.add(new Particle(addedPose, 0));
         }
 
     }

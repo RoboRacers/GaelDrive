@@ -87,7 +87,9 @@ public class FieldDistance {
             return -1;
         }
 
-        double t1 = VectorUtils.CrossProduct2d(VectorUtils.Vector2dToVector(v2), VectorUtils.Vector2dToVector(v1))/dot;
+        double t1 = VectorUtils.CrossProduct2d(
+                VectorUtils.create2DVector(v2.getX(), v2.getY())
+                , VectorUtils.create2DVector(v1.getX(), v1.getY()))/dot;
         double t2 = (v1.dot(v3)) / dot;
 
         if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {
@@ -109,7 +111,9 @@ public class FieldDistance {
             return -1;
         }
 
-        double t1 = VectorUtils.CrossProduct2d(VectorUtils.Vector2dToVector(v2), VectorUtils.Vector2dToVector(v1))/dot;
+        double t1 = VectorUtils.CrossProduct2d(
+                VectorUtils.create2DVector(v2.getX(), v2.getY())
+                , VectorUtils.create2DVector(v1.getX(), v1.getY()))/dot;
         double t2 = (v1.dot(v3)) / dot;
 
         if (t1 >= 0.0 && (t2 >= 0.0 && t2 <= 1.0)) {

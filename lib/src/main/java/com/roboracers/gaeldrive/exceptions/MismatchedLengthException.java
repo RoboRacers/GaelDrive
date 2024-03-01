@@ -1,4 +1,4 @@
-package com.roboracers.gaeldrive.utils;
+package com.roboracers.gaeldrive.exceptions;
 
 public class MismatchedLengthException extends Exception {
     public MismatchedLengthException(String errorMessage) {
