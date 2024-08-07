@@ -3,14 +3,16 @@
  */
 package com.roboracers.gaeldrive;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.roboracers.gaeldrive.filters.ParticleFilter2d;
+import com.roboracers.gaeldrive.particles.Particle;
 import com.roboracers.gaeldrive.sensors.PositonalSensorModel;
 import com.roboracers.gaeldrive.sensors.SensorModel;
+import com.roboracers.gaeldrive.utils.Deviance;
 import com.roboracers.gaeldrive.utils.VectorUtils;
 
-import org.apache.commons.math3.linear.ArrayRealVector;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -65,12 +67,14 @@ class PositionalSensorTest {
                 sensor.update();
             }
             particleFilter2d.weighParticles(sensors);
-            particleFilter2d.resampleParticles(new double[] {0.1,0.1,0.001});
+            particleFilter2d.resampleParticles(new Deviance(0.1, 0.1, 0.001));
         }
 
         particleFilter2d.weighParticles(sensors);
 
-        System.out.print(particleFilter2d.getBestParticle());
+        Particle bestParticle = particleFilter2d.getBestParticle();
 
+        assertNotNull(bestParticle);
+        assertEquals(3, bestParticle.getDimensions());
     }
 }
