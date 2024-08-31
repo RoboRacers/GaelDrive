@@ -48,7 +48,7 @@ public abstract class PositonalSensorModel implements SensorModel {
      */
     @Override
     public RealVector getSimulatedReading(RealVector state) throws Exception {
-        if (state.getDimension() != position.getDimension() && position != null) {
+        if (position != null && state.getDimension() != position.getDimension()) {
             throw new MismatchedLengthException("Mismatched vector length for positional sensor model");
         }
         return state;
