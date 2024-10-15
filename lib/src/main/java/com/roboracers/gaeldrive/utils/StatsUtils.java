@@ -34,11 +34,15 @@ public class StatsUtils {
             throw new MismatchedLengthException("Mismatched Length for resampling deviances");
         }
 
+        // Operate on a copy so the caller's vector (which may be a particle's
+        // live state, shared across multiple resampled particles) is never mutated.
+        RealVector noisyState = new ArrayRealVector(state);
+
         for (int i = 0; i < len; i++) {
-            state.setEntry(i, generateGaussian(deviances.values[i], state.getEntry(i)));
+            noisyState.setEntry(i, generateGaussian(deviances.values[i], state.getEntry(i)));
         }
 
-        return new ArrayRealVector(state);
+        return noisyState;
 
     }
 
