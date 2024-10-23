@@ -29,6 +29,24 @@ public class ParticleFilter {
     int Dimensions;
 
     /**
+     * Default constructor. Dimensions must be set separately (e.g. via a
+     * subclass, or {@link #ParticleFilter(int)}) before calling
+     * {@link #initializeParticles(int, RealVector, double[])}.
+     */
+    public ParticleFilter() {
+    }
+
+    /**
+     * @param dimensions Number of dimensions of the state space this filter operates in.
+     */
+    public ParticleFilter(int dimensions) {
+        if (dimensions <= 0) {
+            throw new IllegalArgumentException("dimensions must be positive");
+        }
+        this.Dimensions = dimensions;
+    }
+
+    /**
      * Add a particle to the internal array.
      * @param particle
      */
@@ -52,6 +70,16 @@ public class ParticleFilter {
     }
 
     public void initializeParticles(int numParticles, RealVector startingLocation, double[] constraints) {
+
+        if (Dimensions <= 0) {
+            throw new IllegalStateException(
+                    "Dimensions must be set (e.g. via the ParticleFilter(int) constructor) before initializing particles");
+        }
+        if (constraints.length != Dimensions * 2) {
+            throw new IllegalArgumentException(
+                    "constraints must contain a (min, max) bound pair per dimension: expected length "
+                            + (Dimensions * 2) + " but got " + constraints.length);
+        }
 
         for(int i=0; i < numParticles; i++ ) {
             ArrayRealVector deviances = new ArrayRealVector(Dimensions);
