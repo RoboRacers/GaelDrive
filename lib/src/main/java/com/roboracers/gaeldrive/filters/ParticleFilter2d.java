@@ -83,8 +83,9 @@ public class ParticleFilter2d extends ParticleFilter {
                     startingLocation.getEntry(2) + headingDeviation
             });
 
-            // Add the given particle back into the particle set
-            super.add(new Particle(addedPose, 0, i));
+            // Add the given particle back into the particle set with a uniform
+            // prior weight, consistent with ParticleFilter.initializeParticles.
+            super.add(new Particle(addedPose, 1, i));
         }
 
     }
@@ -109,8 +110,9 @@ public class ParticleFilter2d extends ParticleFilter {
                     startingLocation.getEntry(2) + headingDeviation
             });
 
-            // Add the given particle back into the particle set
-            super.add(new Particle(addedPose, 0, i));
+            // Add the given particle back into the particle set with a uniform
+            // prior weight, consistent with ParticleFilter.initializeParticles.
+            super.add(new Particle(addedPose, 1, i));
         }
 
     }
