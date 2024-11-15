@@ -4,6 +4,8 @@ package com.roboracers.gaeldrive.filters;
 import com.roboracers.gaeldrive.particles.Particle;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.utils.Deviance;
+import com.roboracers.gaeldrive.utils.EmptyParticleSetException;
+import com.roboracers.gaeldrive.utils.InvalidWeightException;
 import com.roboracers.gaeldrive.utils.StatsUtils;
 
 import org.apache.commons.math3.exception.ZeroException;
@@ -147,7 +149,7 @@ public class ParticleFilter {
             }
 
             if (cumulativeWeightModifier == 0) {
-                throw new Exception("Sensor weights are zero, assign weights to sensor");
+                throw new InvalidWeightException("Sensor weights are zero, assign weights to sensor");
             }
             // Calculate the average weights of all the sensors and assign it to the particle
             particle.setWeight(cumulativeWeight/cumulativeWeightModifier);
@@ -164,12 +166,19 @@ public class ParticleFilter {
      */
     public void resampleParticles(Deviance resamplingDeviances) throws Exception {
         int numParticles = Particles.size();
+        if (numParticles == 0) {
+            throw new EmptyParticleSetException("Cannot resample an empty particle set");
+        }
         ArrayList<Particle> newParticles = new ArrayList<>(numParticles);
 
         double totalWeight = 0.0;
 
         for (Particle particle : Particles) {
             totalWeight += particle.getWeight(); // Replace with your weight retrieval logic
+        }
+
+        if (totalWeight <= 0) {
+            throw new InvalidWeightException("Cannot resample when total particle weight is zero or negative - call weighParticles first");
         }
 
         double stepSize = totalWeight / numParticles;
@@ -206,7 +215,7 @@ public class ParticleFilter {
      * Gets the particle with the highest weight.
      * @return Particle of the highest weighted particle.
      */
-    public Particle getBestParticle () throws Exception {
+    public Particle getBestParticle () throws EmptyParticleSetException {
 
         double highestWeight = 0;
         Particle bestParticle = null;
@@ -220,7 +229,7 @@ public class ParticleFilter {
             }
         }
         if (bestParticle == null) {
-            throw new Exception("Sorting error when getting best particle, no particle has highest weight.");
+            throw new EmptyParticleSetException("No particle has a positive weight - is the particle set empty, or has weighParticles not been called yet?");
         } else {
             return bestParticle;
         }
@@ -230,8 +239,11 @@ public class ParticleFilter {
     /**
      * Get a random particle from the particle set. Used for debugging.
      */
-    public Particle getRandomParticle() {
+    public Particle getRandomParticle() throws EmptyParticleSetException {
         int range = Particles.size();
+        if (range == 0) {
+            throw new EmptyParticleSetException("Cannot get a random particle from an empty particle set");
+        }
         return Particles.get(ThreadLocalRandom.current().nextInt(0, range));
     }
 
