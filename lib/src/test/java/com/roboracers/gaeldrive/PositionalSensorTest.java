@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.roboracers.gaeldrive.filters.ParticleFilter2d;
 import com.roboracers.gaeldrive.particles.Particle;
-import com.roboracers.gaeldrive.sensors.PositonalSensorModel;
+import com.roboracers.gaeldrive.sensors.PositionalSensorModel;
 import com.roboracers.gaeldrive.sensors.SensorModel;
 import com.roboracers.gaeldrive.utils.Deviance;
 import com.roboracers.gaeldrive.utils.VectorUtils;
@@ -23,7 +23,7 @@ class PositionalSensorTest {
 
         ParticleFilter2d particleFilter2d = new ParticleFilter2d();
 
-        PositonalSensorModel positonalSensorModel = new PositonalSensorModel() {
+        PositionalSensorModel positonalSensorModel = new PositionalSensorModel() {
 
             @Override
             public double getWeightModifier() {
@@ -36,7 +36,7 @@ class PositionalSensorTest {
             }
         };
 
-        PositonalSensorModel positonalSensorModel1 = new PositonalSensorModel() {
+        PositionalSensorModel positonalSensorModel1 = new PositionalSensorModel() {
 
             @Override
             public double getWeightModifier() {

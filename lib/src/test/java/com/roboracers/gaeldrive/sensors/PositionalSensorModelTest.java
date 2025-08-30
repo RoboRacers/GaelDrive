@@ -9,10 +9,10 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 import org.junit.jupiter.api.Test;
 
-class PositonalSensorModelTest {
+class PositionalSensorModelTest {
 
-    private static PositonalSensorModel newModel() {
-        return new PositonalSensorModel() {
+    private static PositionalSensorModel newModel() {
+        return new PositionalSensorModel() {
             @Override
             public void update() {
                 // no-op for tests
@@ -22,7 +22,7 @@ class PositonalSensorModelTest {
 
     @Test
     void getSimulatedReadingDoesNotThrowWhenPositionIsUnset() throws Exception {
-        PositonalSensorModel model = newModel();
+        PositionalSensorModel model = newModel();
         RealVector state = new ArrayRealVector(new double[]{1, 2, 3});
 
         assertEquals(state, model.getSimulatedReading(state));
@@ -30,7 +30,7 @@ class PositonalSensorModelTest {
 
     @Test
     void getSimulatedReadingThrowsOnDimensionMismatch() {
-        PositonalSensorModel model = newModel();
+        PositionalSensorModel model = newModel();
         model.position = new ArrayRealVector(new double[]{1, 2, 3});
         RealVector mismatchedState = new ArrayRealVector(new double[]{1, 2});
 
@@ -39,7 +39,7 @@ class PositonalSensorModelTest {
 
     @Test
     void getSimulatedReadingSucceedsOnMatchingDimensions() throws Exception {
-        PositonalSensorModel model = newModel();
+        PositionalSensorModel model = newModel();
         model.position = new ArrayRealVector(new double[]{1, 2, 3});
         RealVector state = new ArrayRealVector(new double[]{4, 5, 6});
 

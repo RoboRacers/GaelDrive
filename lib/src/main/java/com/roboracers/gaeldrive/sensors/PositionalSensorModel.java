@@ -8,7 +8,7 @@ import org.apache.commons.math3.linear.RealVector;
 /**
  * Simple positional sensor.
  */
-public abstract class PositonalSensorModel implements SensorModel {
+public abstract class PositionalSensorModel implements SensorModel {
 
     public RealVector position;
 
