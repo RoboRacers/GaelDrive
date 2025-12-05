@@ -11,7 +11,7 @@ public class VectorUtils {
      * @param t2 Second Vector
      * @return Scalar
      */
-    public static double CrossProduct2d (RealVector t1, RealVector t2) {
+    public static double crossProduct2d (RealVector t1, RealVector t2) {
         return t1.getEntry(0)*t2.getEntry(1)-t1.getEntry(1)*t2.getEntry(0);
     }
 
