@@ -26,9 +26,9 @@ public class ParticleFilter {
     /**
      * Hashmap that stores all the particles in Integer/Particle pairs.
      */
-    ArrayList<Particle> Particles = new ArrayList<>();
+    ArrayList<Particle> particles = new ArrayList<>();
     private final Random random = new Random();
-    int Dimensions;
+    int dimensions;
 
     /**
      * Default constructor. Dimensions must be set separately (e.g. via a
@@ -45,7 +45,7 @@ public class ParticleFilter {
         if (dimensions <= 0) {
             throw new IllegalArgumentException("dimensions must be positive");
         }
-        this.Dimensions = dimensions;
+        this.dimensions = dimensions;
     }
 
     /**
@@ -53,14 +53,14 @@ public class ParticleFilter {
      * @param particle
      */
     public void add(Particle particle) {
-        Particles.add(particle);
+        particles.add(particle);
     }
 
     /**
      * Clear all particles.
      */
     public void clear() {
-        Particles.clear();
+        particles.clear();
     }
 
     /**
@@ -68,25 +68,25 @@ public class ParticleFilter {
      * @return arraylist of particles
      */
     public ArrayList<Particle> getParticles() {
-        return this.Particles;
+        return this.particles;
     }
 
     public void initializeParticles(int numParticles, RealVector startingLocation, double[] constraints) {
 
-        if (Dimensions <= 0) {
+        if (dimensions <= 0) {
             throw new IllegalStateException(
                     "Dimensions must be set (e.g. via the ParticleFilter(int) constructor) before initializing particles");
         }
-        if (constraints.length != Dimensions * 2) {
+        if (constraints.length != dimensions * 2) {
             throw new IllegalArgumentException(
                     "constraints must contain a (min, max) bound pair per dimension: expected length "
-                            + (Dimensions * 2) + " but got " + constraints.length);
+                            + (dimensions * 2) + " but got " + constraints.length);
         }
 
         for(int i=0; i < numParticles; i++ ) {
-            ArrayRealVector deviances = new ArrayRealVector(Dimensions);
+            ArrayRealVector deviances = new ArrayRealVector(dimensions);
 
-            for (int j = 0; j < Dimensions; j++) {
+            for (int j = 0; j < dimensions; j++) {
                 deviances.setEntry(
                         j,
                         ThreadLocalRandom.current().nextDouble(constraints[j*2], constraints[j*2+1])
@@ -107,12 +107,12 @@ public class ParticleFilter {
     public void translateParticles (RealVector translationVector) {
 
         int index = 0;
-        // For every particle in our set of Particles
-        for (Particle particle: Particles) {
+        // For every particle in our set of particles
+        for (Particle particle: particles) {
             // Add our translational vector
             particle.setState(particle.getState().add(translationVector));
             // Set the value as our updated particle
-            Particles.set(index, particle);
+            particles.set(index, particle);
             index ++;
         }
     }
@@ -127,7 +127,7 @@ public class ParticleFilter {
 
         // For every particle in our state space
         int index = 0;
-        for (Particle particle: Particles) {
+        for (Particle particle: particles) {
 
             double cumulativeWeight = 0;
             double cumulativeWeightModifier = 0;
@@ -155,7 +155,7 @@ public class ParticleFilter {
             particle.setWeight(cumulativeWeight/cumulativeWeightModifier);
 
             // Add the particle with the updated weight back into our particle set.
-            Particles.set(index, particle);
+            particles.set(index, particle);
             index ++;
         }
     }
@@ -165,7 +165,7 @@ public class ParticleFilter {
      * Systematic resampling for the particle filter.
      */
     public void resampleParticles(Deviance resamplingDeviances) throws Exception {
-        int numParticles = Particles.size();
+        int numParticles = particles.size();
         if (numParticles == 0) {
             throw new EmptyParticleSetException("Cannot resample an empty particle set");
         }
@@ -173,7 +173,7 @@ public class ParticleFilter {
 
         double totalWeight = 0.0;
 
-        for (Particle particle : Particles) {
+        for (Particle particle : particles) {
             totalWeight += particle.getWeight(); // Replace with your weight retrieval logic
         }
 
@@ -185,17 +185,17 @@ public class ParticleFilter {
         double position = random.nextDouble() * stepSize;
 
         int index = 0;
-        double cumulativeWeight = Particles.get(0).getWeight();
+        double cumulativeWeight = particles.get(0).getWeight();
 
         for (int i = 0; i < numParticles; i++) {
             while (position > cumulativeWeight && index < numParticles - 1) {
                 index++;
-                cumulativeWeight += Particles.get(index).getWeight();
+                cumulativeWeight += particles.get(index).getWeight();
             }
 
             newParticles.add(new Particle(
                     StatsUtils.addGaussianNoise(
-                            Particles.get(index).getState(),
+                            particles.get(index).getState(),
                             resamplingDeviances
                     ),
                     1.0,
@@ -206,7 +206,7 @@ public class ParticleFilter {
 
         }
 
-        Particles = newParticles;
+        particles = newParticles;
 
     }
 
@@ -221,7 +221,7 @@ public class ParticleFilter {
         Particle bestParticle = null;
 
         // Loop through all weights and get highest weight
-        for (Particle particle : Particles) {
+        for (Particle particle : particles) {
             double particleWeight = particle.getWeight();
             if (particleWeight > highestWeight) {
                 bestParticle = particle;
@@ -240,14 +240,14 @@ public class ParticleFilter {
      * Get a random particle from the particle set. Used for debugging.
      */
     public Particle getRandomParticle() throws EmptyParticleSetException {
-        int range = Particles.size();
+        int range = particles.size();
         if (range == 0) {
             throw new EmptyParticleSetException("Cannot get a random particle from an empty particle set");
         }
-        return Particles.get(ThreadLocalRandom.current().nextInt(0, range));
+        return particles.get(ThreadLocalRandom.current().nextInt(0, range));
     }
 
     public Particle getParticle(int i) {
-        return Particles.get(i);
+        return particles.get(i);
     }
 }

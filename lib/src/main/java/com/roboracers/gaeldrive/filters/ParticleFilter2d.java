@@ -21,7 +21,7 @@ public class ParticleFilter2d extends ParticleFilter {
      * Quick initialization of a Particle Filter with default covariances
      */
     public ParticleFilter2d() {
-        super.Dimensions = 3;
+        super.dimensions = 3;
     }
 
     /**
@@ -29,7 +29,7 @@ public class ParticleFilter2d extends ParticleFilter {
      * @param bound bounds for particle initialization
      */
     public ParticleFilter2d(Bound bound) {
-        super.Dimensions = 3;
+        super.dimensions = 3;
         this.bound = bound;
     }
 
@@ -39,7 +39,7 @@ public class ParticleFilter2d extends ParticleFilter {
      * @param resampleDeviance
      */
     public ParticleFilter2d(Bound bound, Deviance resampleDeviance) {
-        super.Dimensions = 3;
+        super.dimensions = 3;
         this.bound = bound;
         this.resampleDeviance = resampleDeviance;
     }
