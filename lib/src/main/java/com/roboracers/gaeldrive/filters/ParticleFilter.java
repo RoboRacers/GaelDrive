@@ -8,7 +8,6 @@ import com.roboracers.gaeldrive.utils.EmptyParticleSetException;
 import com.roboracers.gaeldrive.utils.InvalidWeightException;
 import com.roboracers.gaeldrive.utils.StatsUtils;
 
-import org.apache.commons.math3.exception.ZeroException;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
