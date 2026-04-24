@@ -23,7 +23,7 @@ class PositionalSensorTest {
 
         ParticleFilter2d particleFilter2d = new ParticleFilter2d();
 
-        PositionalSensorModel positonalSensorModel = new PositionalSensorModel() {
+        PositionalSensorModel positionalSensorModel = new PositionalSensorModel() {
 
             @Override
             public double getWeightModifier() {
@@ -36,22 +36,9 @@ class PositionalSensorTest {
             }
         };
 
-        PositionalSensorModel positonalSensorModel1 = new PositionalSensorModel() {
-
-            @Override
-            public double getWeightModifier() {
-                return 1;
-            }
-
-            @Override
-            public void update() {
-                position = VectorUtils.create3DVector(30,0,0);
-            }
-        };
-
         List<SensorModel> sensors = new ArrayList<>();
 
-        sensors.add(positonalSensorModel);
+        sensors.add(positionalSensorModel);
 
         particleFilter2d.initializeParticles(
                 500,
