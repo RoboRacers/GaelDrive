@@ -6,4 +6,4 @@ Works with [Roadrunner](https://github.com/acmerobotics/road-runner), a popular 
 
 Full installation releasing September 9th.
 
-Created by Vikram Kommera from FTC Team 16481 RoboRacers, in collaboration with [GaelSuite](https://github.com/GaelSuite).
+Created by Tarun Rajesh and Vikram Kommera from FTC Team 16481 RoboRacers, in collaboration with [GaelSuite](https://github.com/GaelSuite).
